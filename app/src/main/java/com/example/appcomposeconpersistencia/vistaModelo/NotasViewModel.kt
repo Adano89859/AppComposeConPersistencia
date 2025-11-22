@@ -28,7 +28,12 @@ class NotasViewModel(
         viewModelScope.launch {
             repository.obtenerNotas().collect { listaNotas ->
                 _uiState.update { estadoActual ->
-                    estadoActual.copy(notas = listaNotas)
+                    //Aquí dependiendo de la nota tendrá alguna prioridad u otra
+                    val notasOrdenadas = listaNotas.sortedWith(
+                        compareByDescending<Nota> { it.urgente } // Urgentes primero (true > false)
+                            .thenBy { it.fechaMaximaRealizacion } // Luego por fecha
+                    )
+                    estadoActual.copy(notas = notasOrdenadas)
                 }
             }
         }
@@ -90,7 +95,8 @@ class NotasViewModel(
                         tituloNuevo = "",
                         textoNuevo = "",
                         fechaMaximaNuevo = 0L,
-                        urgenteNuevo = false
+                        urgenteNuevo = false,
+                        mostrarFormulario = false
                     )
                 }
             }
@@ -114,6 +120,92 @@ class NotasViewModel(
             repository.editar(notaActualizada)
         }
     }
+
+    //Función para mostrar el formulario de agregar/editar nota
+    fun mostrarFormulario() {
+        _uiState.update { estadoActual ->
+            estadoActual.copy(mostrarFormulario = true)
+        }
+    }
+
+    //Función para ocultar el formulario y volver a la lista
+    fun ocultarFormulario() {
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                mostrarFormulario = false,
+                esModoEdicion = false,
+                notaEditando = null,
+                tituloNuevo = "",
+                textoNuevo = "",
+                fechaMaximaNuevo = 0L,
+                urgenteNuevo = false
+            )
+        }
+    }
+
+    //Función para iniciar la edición de una nota existente
+    fun iniciarEdicion(nota: Nota) {
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                notaEditando = nota,
+                esModoEdicion = true,
+                tituloNuevo = nota.titulo,
+                textoNuevo = nota.texto,
+                fechaMaximaNuevo = nota.fechaMaximaRealizacion,
+                urgenteNuevo = nota.urgente,
+                mostrarFormulario = true
+            )
+        }
+    }
+
+    //Función para cancelar la edición y volver a la lista
+    fun cancelarEdicion() {
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                notaEditando = null,
+                esModoEdicion = false,
+                tituloNuevo = "",
+                textoNuevo = "",
+                fechaMaximaNuevo = 0L,
+                urgenteNuevo = false,
+                mostrarFormulario = false
+            )
+        }
+    }
+
+    //Función para actualizar una nota existente en la base de datos
+    fun actualizarNota() {
+        viewModelScope.launch {
+            val estadoActual = _uiState.value
+            val notaEditando = estadoActual.notaEditando
+
+            if (notaEditando != null &&
+                estadoActual.tituloNuevo.isNotBlank() &&
+                estadoActual.textoNuevo.isNotBlank()) {
+
+                val notaActualizada = notaEditando.copy(
+                    titulo = estadoActual.tituloNuevo.trim(),
+                    texto = estadoActual.textoNuevo.trim(),
+                    fechaMaximaRealizacion = estadoActual.fechaMaximaNuevo,
+                    urgente = estadoActual.urgenteNuevo
+                )
+
+                repository.editar(notaActualizada)
+
+                _uiState.update {
+                    it.copy(
+                        notaEditando = null,
+                        esModoEdicion = false,
+                        tituloNuevo = "",
+                        textoNuevo = "",
+                        fechaMaximaNuevo = 0L,
+                        urgenteNuevo = false,
+                        mostrarFormulario = false
+                    )
+                }
+            }
+        }
+    }
 }
 
 //Estado de la UI para la pantalla de notas
@@ -122,5 +214,8 @@ data class NotasUiState(
     val tituloNuevo: String = "",
     val textoNuevo: String = "",
     val fechaMaximaNuevo: Long = 0L,
-    val urgenteNuevo: Boolean = false
+    val urgenteNuevo: Boolean = false,
+    val mostrarFormulario: Boolean = false,
+    val notaEditando: Nota? = null,
+    val esModoEdicion: Boolean = false
 )
