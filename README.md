@@ -1,9 +1,8 @@
 # 📱 AppComposeConPersistencia
 
 **Autores:** Adán Romero, Sara Alonso  
-**Fecha:** 21/11/2025  
-**Versión de Android:** API mínima dependiente del proyecto  
-**Versión del proyecto:** 1.0  
+**Fecha:** 22/11/2025  
+**Temática:** Notas de cosas a hacer 
 
 ---
 
@@ -68,8 +67,42 @@ AppComposeConPersistencia/
 
 ---
 
+## 📸 Capturas de pantalla
+
+Vista inicial de la app:
+
+<img width="635" height="1389" alt="image" src="https://github.com/user-attachments/assets/02860f5a-abd0-478e-b647-8459474307e4" />
+
+Creación de la nota:
+
+<img width="607" height="1351" alt="image" src="https://github.com/user-attachments/assets/75f320f8-7218-43a7-9d1a-70670ae54c89" />
+
+Nos aparece la nota, podemos marcarla como urgente o no; eliminarla, y si clikeamos en ella la podremos modificar:
+
+<img width="606" height="1341" alt="image" src="https://github.com/user-attachments/assets/6126304b-4e63-43d0-a16f-4d84b8700a30" />
+
+---
+
 ## 🧠 Conclusión y aprendizajes
 
 ### Aprendizajes principales
 
+-Correcta organización del proyecto en múltiples capas: ui, data, viewmodel.
+
+-Mejor comprensión del mapeo de clases, transformaciones y cómo interactúan dentro de la app.
+
+-Gestión y resolución de errores de versiones y dependencias en Gradle.
+
+-Trabajo en equipo y división eficiente de tareas.
+
+-Investigación sobre la implementación de DataStore, ViewModel y arquitectura moderna en Android.
+
 ### Limitaciones y retos
+
+-Problemas para elegir y aplicar versiones correctas de dependencias (por ejemplo, compatibilidad con Room).
+
+-Conflictos de dependencias que requirieron ajustes manuales e investigación.
+
+-Necesidad de profundizar en la comprensión de la función de cada archivo dentro del proyecto.
+
+-Poco tiempo disponible debido a otros proyectos y exámenes, lo que limitó la planificación previa.
